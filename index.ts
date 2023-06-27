@@ -1,89 +1,66 @@
 // This is our main function
 
 import * as readline from 'readline';
-function fizzbuzz(numb: number, rulefor3: string, rulefor5:string, rulefor7:string ,rulefor11: string, rulefor13: string, rulefor17: string): void {
-    let rules : { [key: number] :string } = {};
-    if(rulefor3 === "y")
-     rules[3] = "Fizz";
-    else
-        rules[3] = "n";
-
-    if(rulefor5 === "y")
-        rules[5] = "Buzz";
-    else
-        rules[5] = "n";
-
-    if(rulefor7 === "y")
-        rules[7] = "Bang";
-    else
-        rules[7] = "n";
-
-    if(rulefor11 === "y")
-        rules[11] = "Bong";
-    else
-        rules[11] = "n";
-
-    if(rulefor13 === "y")
-        rules[13] = "Fezz";
-    else
-        rules[13] = "n";
-
-    if(rulefor17 === "y")
-        rules[17] = "y";
-    else
-        rules[17] = "n";
-   let output: string[] = [];
+function fizzbuzz(numb: number, rules : {[key: number] :boolean }) : void {
+   const output: string[] = [];
    for (let i = 1; i <= numb; i++) {
-       let answer = "";
-       if ( i % 11 == 0 && rules[11] != "n")
-           answer += rules[11];
+       let answer : string[] = [];
+       if ( i % 11 == 0 && rules[11] === true) {
+           answer.push("Bong");
+       }
        else {
-           if (i % 15 === 0 && rules[3] != "n" && rules[5] != "n")
-               answer += "FizzBuzz";
-           else {
-               if (i % 3 === 0 && rules[3] != "n")
-                   answer += rules[3];
-               if (i % 5 === 0 && rules[5] != "n")
-                   answer += rules[5];
-               if (i % 7 === 0 && rules[7] != "n")
-                   answer += rules[7];
+           if (i % 3 === 0 && rules[3] === true) {
+               answer.push("Fizz");
+           }
+           if (i % 5 === 0 && rules[5] === true) {
+               answer.push("Buzz");
+           }
+
+           if (i % 7 === 0 && rules[7] === true) {
+               answer.push("Bang");
            }
        }
 
-       if (i % 13 === 0 && rules[13] != "n"){
-           const index = answer.indexOf("B");
-           if(index === -1)
-               answer += rules[13];
-           else
-               answer = answer.slice(0, index) + rules[13] + answer.slice(index);
+       if (i % 13 === 0 && rules[13] === true) {
+           let index = answer.findIndex(object => object.startsWith("B"));
+           if(index === -1) {
+               answer.push("Fezz");
+           } else {
+               answer.splice(index, 0, "Fezz");
+           }
        }
 
-       if (i % 17 == 0 && rules[17] != "n")
-           answer = answer.split(/(?=[A-Z])/).reverse().join("");
-       if (answer === "")
-           answer = i.toString();
-       output.push(answer);
+       if (i % 17 == 0 && rules[17] === true) {
+           answer.reverse().join("");
+       }
+       if (answer.length === 0) {
+           answer.push(i.toString());
+       }
+       output.push(answer.join(""));
    }
    console.log(output.join(", "));
 }
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-// Now, we run the main function:
-rl.question("Write a number", (numb) => {
-    rl.question("rule for number 3? ", (rulefor3) => {
-       rl.question("rule for number 5? ", (rulefor5) => {
-           rl.question("rule for number 7? ", (rulefor7) => {
-               rl.question("rule for number 11? ", (rulefor11) : void => {
-                   rl.question("rule for number 13? ", (rulefor13) : void => {
-                       rl.question("rule for number 17? ", (rulefor17) : void => {
-                           fizzbuzz(parseInt(numb), rulefor3, rulefor5, rulefor7, rulefor11, rulefor13,rulefor17);
-                           rl.close();
-                       });
-                   });
-               });
-           });
-       });
+
+function getUserInput() : void {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
     });
-});
+    let rules : { [key: number] : boolean } = {};
+    rl.question("Write a number", (numb) => {
+        readRule();
+        function readRule() {
+            rl.question("write a rule that you want to be active", (rule) => {
+                if (rule.length === 0) {
+                    rl.close();
+                    fizzbuzz(Number(numb), rules);
+                } else {
+                    rules[parseInt(rule)] = true;
+                    readRule();
+                }
+            });
+        }
+    });
+}
+
+getUserInput();
