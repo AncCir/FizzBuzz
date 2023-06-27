@@ -26,7 +26,7 @@ function fizzbuzz(numb: number, rulefor3: string, rulefor5:string, rulefor13:str
            }
        }
 
-       if (i % 13 === 0) {
+       if (i % 13 === 0){
            const index = answer.indexOf("B");
            if(index === -1)
                answer += rules[13];
